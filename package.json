@@ -9,7 +9,7 @@
     "build": "tsc --noEmit && vite build",
     "preview": "vite preview",
     "test": "vitest run",
-    "check": "npm run test && npm run build"
+    "check": "pnpm test && pnpm build"
   },
   "dependencies": {
     "@turf/area": "^7.2.0",
