@@ -14,14 +14,13 @@ jobs:
     timeout-minutes: 10
     steps:
       - name: Check out repository
-        uses: actions/checkout@v4
-      - name: Set up Node.js
-        uses: actions/setup-node@v4
+        uses: actions/checkout@v7
+      - name: Set up pnpm and Node.js
+        uses: pnpm/setup@v1
         with:
-          node-version: 22
-          cache: pnpm
-      - name: Enable pnpm
-        run: corepack enable
+          runtime: node@22
+          cache: true
+          install: false
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
       - name: Run tests and production build
