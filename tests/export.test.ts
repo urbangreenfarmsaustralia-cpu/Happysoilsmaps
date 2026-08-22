@@ -23,6 +23,11 @@ describe('createPlanCsv', () => {
       applications: 1,
       allowancePercent: 3,
       packSize: 20,
+      costPerPack: 145,
+      waterRateLHa: 100,
+      tankCapacityL: 1200,
+      scheduledDate: '2026-09-01',
+      status: 'ready',
       notes: '',
       coordinates: [],
     };
@@ -40,6 +45,7 @@ describe('createPlanCsv', () => {
     expect(csv).toContain('"Locality or town","Griffith"');
     expect(csv).toContain('"State","NSW"');
     expect(csv).toContain('"Postcode","2680"');
+    expect(csv).toContain('"Job status","ready"');
     expect(csv).toContain('"Total quantity (L)","51.5"');
   });
 });

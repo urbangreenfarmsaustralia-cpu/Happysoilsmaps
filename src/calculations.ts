@@ -21,6 +21,23 @@ export interface ApplicationResult {
   packsRequired: number | null;
 }
 
+export interface OperationalInputs {
+  areaHa: number;
+  applications: number;
+  waterRateLHa: number;
+  tankCapacityL: number;
+  packsRequired: number | null;
+  costPerPack: number;
+}
+
+export interface OperationalResult {
+  carrierVolumePerApplicationL: number;
+  totalCarrierVolumeL: number;
+  tankLoadsPerApplication: number | null;
+  totalTankLoads: number | null;
+  estimatedInputCost: number | null;
+}
+
 const toBaseRate = (rate: number, unit: RateUnit): { rate: number; unit: BaseUnit } => {
   if (unit === 'mL/ha') return { rate: rate / 1000, unit: 'L' };
   if (unit === 'g/ha') return { rate: rate / 1000, unit: 'kg' };
@@ -55,6 +72,33 @@ export function calculateApplication(inputs: ApplicationInputs): ApplicationResu
     totalQuantity,
     allowanceQuantity,
     packsRequired: inputs.packSize > 0 ? Math.ceil(totalQuantity / inputs.packSize) : null,
+  };
+}
+
+export function calculateOperations(inputs: OperationalInputs): OperationalResult {
+  ensureNonNegative(inputs.areaHa, 'Area');
+  ensureNonNegative(inputs.waterRateLHa, 'Water rate');
+  ensureNonNegative(inputs.tankCapacityL, 'Tank capacity');
+  ensureNonNegative(inputs.costPerPack, 'Cost per pack');
+
+  if (!Number.isInteger(inputs.applications) || inputs.applications < 1) {
+    throw new Error('Applications must be a whole number of at least one.');
+  }
+
+  const carrierVolumePerApplicationL = inputs.areaHa * inputs.waterRateLHa;
+  const totalCarrierVolumeL = carrierVolumePerApplicationL * inputs.applications;
+  const tankLoadsPerApplication = inputs.tankCapacityL > 0 && carrierVolumePerApplicationL > 0
+    ? Math.ceil(carrierVolumePerApplicationL / inputs.tankCapacityL)
+    : null;
+
+  return {
+    carrierVolumePerApplicationL,
+    totalCarrierVolumeL,
+    tankLoadsPerApplication,
+    totalTankLoads: tankLoadsPerApplication === null ? null : tankLoadsPerApplication * inputs.applications,
+    estimatedInputCost: inputs.packsRequired !== null && inputs.costPerPack > 0
+      ? inputs.packsRequired * inputs.costPerPack
+      : null,
   };
 }
 

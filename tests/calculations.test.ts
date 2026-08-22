@@ -1,5 +1,10 @@
 import { describe, expect, it } from 'vitest';
-import { calculateApplication, isAustralianPostcode, polygonAreaHectares } from '../src/calculations';
+import {
+  calculateApplication,
+  calculateOperations,
+  isAustralianPostcode,
+  polygonAreaHectares,
+} from '../src/calculations';
 
 describe('calculateApplication', () => {
   it('calculates a liquid plan across repeated applications and allowance', () => {
@@ -71,6 +76,40 @@ describe('calculateApplication', () => {
       allowancePercent: 0,
       packSize: 10,
     })).toThrow(/Applications/);
+  });
+});
+
+describe('calculateOperations', () => {
+  it('calculates carrier volume, tank loads and pack cost', () => {
+    const result = calculateOperations({
+      areaHa: 20,
+      applications: 2,
+      waterRateLHa: 100,
+      tankCapacityL: 1200,
+      packsRequired: 6,
+      costPerPack: 145,
+    });
+
+    expect(result.carrierVolumePerApplicationL).toBe(2000);
+    expect(result.totalCarrierVolumeL).toBe(4000);
+    expect(result.tankLoadsPerApplication).toBe(2);
+    expect(result.totalTankLoads).toBe(4);
+    expect(result.estimatedInputCost).toBe(870);
+  });
+
+  it('leaves optional estimates blank when the inputs are omitted', () => {
+    const result = calculateOperations({
+      areaHa: 20,
+      applications: 1,
+      waterRateLHa: 0,
+      tankCapacityL: 0,
+      packsRequired: null,
+      costPerPack: 0,
+    });
+
+    expect(result.tankLoadsPerApplication).toBeNull();
+    expect(result.totalTankLoads).toBeNull();
+    expect(result.estimatedInputCost).toBeNull();
   });
 });
 

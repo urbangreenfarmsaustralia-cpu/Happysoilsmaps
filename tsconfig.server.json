@@ -1,0 +1,8 @@
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "types": ["node"],
+    "allowImportingTsExtensions": false
+  },
+  "include": ["server", "src/geometry.ts", "src/intelligence-types.ts", "src/outcomes.ts", "src/recommendations.ts", "src/soil-test.ts"]
+}
